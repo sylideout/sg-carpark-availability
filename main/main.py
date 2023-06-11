@@ -19,11 +19,10 @@ async def bulk_get(calls):
         tasks = []
         for i in range(calls):
             suffix = str(i*500)
-            tasks.append(
-                asyncio.create_task(
-                    get_available_lots(session, URL+suffix)
+            task = asyncio.create_task(
+                get_available_lots(session, URL+suffix)
                     )
-            )
+            tasks.append(task)
         results = await asyncio.gather(*tasks)
 
 
