@@ -1,25 +1,31 @@
-import requests
+import asyncio
+from helper import get_available_lots
+from aiohttp import ClientSession
 
 URL = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2?$skip="
 API_KEY = "8pjsOFa5RpeLxuoRbBM2Eg=="
 
 
-def get_available_lots(url= URL, api_key=API_KEY):
+async def bulk_get(calls):
     """
-    Retrieves current available parking lots
+    Calls get_available_lots concurrently
     """
 
     headers = {
     'AccountKey': API_KEY
     }
 
-    response = requests.request("GET", URL, headers=headers)
-
-    if response.status_code == 200:
-        return print(response.json())
-    else:
-        print('failed to retrieve file')
+    async with ClientSession(headers=headers) as session:
+        tasks = []
+        for i in range(calls):
+            suffix = str(i*500)
+            tasks.append(
+                asyncio.create_task(
+                    get_available_lots(session, URL+suffix)
+                    )
+            )
+        results = await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
-    get_available_lots()
+    asyncio.run(bulk_get(6))
