@@ -27,4 +27,4 @@ async def bulk_get(calls):
 
 
 if __name__ == "__main__":
-    asyncio.run(bulk_get(6))
+    asyncio.run(bulk_get(5))
